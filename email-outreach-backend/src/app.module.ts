@@ -11,7 +11,7 @@ import { UsersModule } from './users/users.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI') || 'mongodb+srv://vivekpandey:hEhFRIYDe4KqBeE2@cluster0.ogujy.mongodb.net',
+        uri: configService.get<string>('MONGO_URI'),
       }),
     }),
     AuthModule,
