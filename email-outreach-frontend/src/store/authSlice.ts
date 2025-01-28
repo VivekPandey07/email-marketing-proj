@@ -25,7 +25,8 @@ export const loginUser = createAsyncThunk(
   async (userData: loginData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_URL}/login`, userData);
-      localStorage.setItem("token", response.data.token);
+      console.log(response.data.access_token)
+      localStorage.setItem("token", response.data.access_token);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -41,7 +42,7 @@ export const registerUser = createAsyncThunk(
   async (userData: registerData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_URL}/signup`, userData);
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("token", response.data.access_token);
       return response.data;
     } catch (error) {
       return rejectWithValue("Registration failed. Please try again.");

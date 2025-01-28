@@ -20,6 +20,7 @@ const Signup = () => {
   
     // Check if the action was fulfilled successfully
     if (registerUser.fulfilled.match(resultAction)) {
+      console.log("Registration successful", resultAction.payload);
       navigate("/dashboard"); // Redirect after sign-up if the action was successful
     } else {
       // Handle error if the registration failed
@@ -60,7 +61,7 @@ const Signup = () => {
         </form>
         <p className="text-sm text-center mt-4">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-500">
+          <a href="/" className="text-blue-500">
             Login
           </a>
         </p>
