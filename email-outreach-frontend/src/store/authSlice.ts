@@ -17,7 +17,7 @@ interface registerData {
 interface AuthState {
   user: any | null;
   token: string | null;
-  error: string | null; // Add error to state
+  error: string | null; 
 }
 
 export const loginUser = createAsyncThunk(
