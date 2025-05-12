@@ -20,6 +20,15 @@ interface AuthState {
   error: string | null; 
 }
 
+interface ForgotPasswordData {
+  email: string;
+}
+
+interface ResetPasswordData {
+  token: string;
+  newPassword: string;
+}
+
 export const loginUser = createAsyncThunk(
   "auth/login",
   async (userData: loginData, { rejectWithValue }) => {
@@ -33,6 +42,31 @@ export const loginUser = createAsyncThunk(
         return rejectWithValue("Unauthorized: Invalid email or password.");
       }
       return rejectWithValue("An unexpected error occurred.");
+    }
+  }
+);
+
+// Forgot Password Thunk
+export const forgotPassword = createAsyncThunk(
+  "auth/forgotPassword",
+  async (data: ForgotPasswordData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/forgot-password`, data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue("Failed to send reset email.");
+    }
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  "auth/resetPassword",
+  async (data: ResetPasswordData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/reset-password`, data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue("Failed to reset password.");
     }
   }
 );
@@ -82,6 +116,18 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.error = action.payload as string; // Set error message
+      })
+      .addCase(forgotPassword.fulfilled, (state) => {
+        state.error = null;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.error = null;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.error = action.payload as string;
       });
   },
 });

@@ -17,4 +17,16 @@ export class UsersService {
     const user = new this.userModel({ email, password: hashedPassword });
     return user.save();
   }
+
+  async updateUser(email: string, updates: Partial<User>): Promise<User | null> {
+    return this.userModel.findOneAndUpdate(
+      { email },
+      { $set: updates },
+      { new: true } // Return the updated document
+    ).exec();
+  }
+
+  async findByResetToken(token: string): Promise<User | null> {
+    return this.userModel.findOne({ resetPasswordToken: token }).exec();
+  }
 }

@@ -11,6 +11,12 @@ export class User {
   @Prop()
   password: string;
 
+  @Prop({ type: String, default: null })
+  resetPasswordToken?: string | null;
+
+  @Prop({ type: Date, default: null })
+  resetPasswordExpires?: Date | null;
+
   @Prop({ default: false })
   isOAuthUser: boolean;
 }

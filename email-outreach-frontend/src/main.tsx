@@ -5,33 +5,30 @@ import { store } from "./store";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom"; 
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Dashboard from "./pages/Dashboard";
+import ForgetPassword from "./pages/ForgetPassword";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import Campaign from "./pages/Campaign";
 import Navbar from "./pages/Navbar"; // Import Navbar
+import ResetPassword from "./pages/ResetPassword";
 
 const App = () => {
   const location = useLocation();  // Get the current route
 
   // Check if the current route is either Login or Signup
-  const showNavbar = !['/', '/signup'].includes(location.pathname);
+  const showNavbar =
+  !['/', '/signup', '/forgot-password'].includes(location.pathname) &&
+  !location.pathname.startsWith('/reset-password');
 
   return (
     <div>
-      {/* Conditionally render the Navbar based on the current route */}
       {showNavbar && <Navbar />}
       
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Route>
-        <Route element={<ProtectedRoute />}>
-          <Route path="/campaigns" element={<Campaign />} />
-        </Route>
+        <Route path="/forgot-password" element={<ForgetPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+        {/* Protected routes */}
         {/* <Route element={<ProtectedRoute />}>
           <Route path="/templates" element={<Templates />} />
         </Route> */}
