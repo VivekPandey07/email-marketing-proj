@@ -29,7 +29,7 @@ export class AuthService {
       resetPasswordExpires: expires,
     });
     // Email Sending Logic in Last
-    console.log(`Password reset link: http://localhost:3000/reset-password/${token}`);
+    console.log(`Password reset link: ${process.env.FRONTEND_URL}/reset-password/${token}`);
 
     return { message: 'Reset link sent. Please check your email.' };
   }
@@ -60,6 +60,12 @@ export class AuthService {
 
   private generateToken(user: any) {
     const payload = { email: user.email, sub: user._id };
-    return { access_token: this.jwtService.sign(payload) };
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: {
+        id: user._id,
+        email: user.email,
+      }
+    };
   }
 }

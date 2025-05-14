@@ -34,9 +34,13 @@ export const loginUser = createAsyncThunk(
   async (userData: loginData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_URL}/login`, userData);
-      console.log(response.data.access_token)
       localStorage.setItem("token", response.data.access_token);
-      return response.data;
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+
+      return {
+        token: response.data.access_token,
+        user: response.data.user
+      };
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         return rejectWithValue("Unauthorized: Invalid email or password.");
@@ -77,7 +81,11 @@ export const registerUser = createAsyncThunk(
     try {
       const response = await axios.post(`${API_URL}/signup`, userData);
       localStorage.setItem("token", response.data.access_token);
-      return response.data;
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      return {
+        token: response.data.access_token,
+        user: response.data.user
+      };
     } catch (error) {
       return rejectWithValue("Registration failed. Please try again.");
     }
@@ -87,7 +95,9 @@ export const registerUser = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
+    user: localStorage.getItem("user") 
+      ? JSON.parse(localStorage.getItem("user") as any)
+      : null,
     token: localStorage.getItem("token") || null,
     error: null, // Initialize error state
   } as AuthState,

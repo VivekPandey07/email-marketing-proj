@@ -3,11 +3,13 @@ import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store"; // Adjust the import path if needed
 import { resetPassword } from "../store/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const ResetPassword = () => {
   const { token } = useParams<{ token: string }>();
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
+  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -18,8 +20,11 @@ const ResetPassword = () => {
     }
 
     try {
-      await dispatch(resetPassword({ token, newPassword: password })).unwrap();
+      const result = await dispatch(resetPassword({ token, newPassword: password })).unwrap();
       setMsg("✅ Password reset successful. You can now log in.");
+      if (resetPassword.fulfilled.match(result)) {
+        navigate("/dashboard");
+      }
     } catch (err: any) {
       setMsg(err || "❌ Failed to reset password");
     }

@@ -9,14 +9,13 @@ import ForgetPassword from "./pages/ForgetPassword";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Navbar from "./pages/Navbar"; // Import Navbar
 import ResetPassword from "./pages/ResetPassword";
+import ResumeBuilder from "./pages/ResumeBuilders";
 
 const App = () => {
   const location = useLocation();  // Get the current route
 
   // Check if the current route is either Login or Signup
-  const showNavbar =
-  !['/', '/signup', '/forgot-password'].includes(location.pathname) &&
-  !location.pathname.startsWith('/reset-password');
+  const showNavbar = false
 
   return (
     <div>
@@ -29,9 +28,9 @@ const App = () => {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* Protected routes */}
-        {/* <Route element={<ProtectedRoute />}>
-          <Route path="/templates" element={<Templates />} />
-        </Route> */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<ResumeBuilder />} />
+        </Route>
 
         {/* Catch-all route for unknown paths */}
         <Route path="*" element={<Navigate to="/" replace />} />
