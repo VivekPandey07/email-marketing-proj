@@ -10,6 +10,8 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Navbar from "./pages/Navbar"; // Import Navbar
 import ResetPassword from "./pages/ResetPassword";
 import ResumeBuilder from "./pages/ResumeBuilders";
+import PortfolioViewer from "./pages/PortfolioViewer";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const location = useLocation();  // Get the current route
@@ -32,6 +34,8 @@ const App = () => {
           <Route path="/dashboard" element={<ResumeBuilder />} />
         </Route>
 
+        <Route path="/portfolio/:id" element={<PortfolioViewer />} />
+
         {/* Catch-all route for unknown paths */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -43,7 +47,26 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <App />
+        <>
+          <Toaster
+            position="bottom-left" 
+            toastOptions={{
+              success: {
+                style: {
+                  background: '#4ade80', 
+                  color: 'white',
+                },
+              },
+              error: {
+                style: {
+                  background: '#f87171', 
+                  color: 'white',
+                },
+              },
+            }}
+          />
+          <App />
+        </>
       </BrowserRouter>
     </Provider>
   </React.StrictMode>

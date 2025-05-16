@@ -56,3 +56,13 @@ export const deleteResume = async (id: string, token: string) => {
     throw error;
   }
 };
+
+export const getResumeById = async (id: string) => {
+  try {
+    const res = await axios.get(`${API_URL}/${id}`);
+    return res.data.resume;
+  } catch (error) {
+    console.error("Error fetching resume:", error);
+    throw error;
+  }
+};

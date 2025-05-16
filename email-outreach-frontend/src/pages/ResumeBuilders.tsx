@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getResumeData, createResume, updateResume, deleteResume } from "../services/resumeService";
 import { useSelector } from "react-redux";
 import ResumeForm from "../components/ResumeForm";
+import toast from "react-hot-toast";
 
 const ResumeBuilder = () => {
   const [resumes, setResumes] = useState<any[]>([]);
@@ -59,6 +60,26 @@ const ResumeBuilder = () => {
     }
   };
 
+  const handleViewPDF = (resume: any) => {
+    // For now, just log and show alert
+    console.log("Generating PDF for resume:", resume);
+    const templateId = Math.floor(Math.random() * 4) + 1; // Random template 1-4
+    alert(`PDF generation would use template ${templateId}. Backend implementation needed.`);
+  };
+
+  const handleCopyPortfolioLink = async (resumeId: string) => {
+    try {
+      const templateId = Math.floor(Math.random() * 4) + 1; // Random template 1-4
+      const portfolioLink = `${window.location.origin}/portfolio/${resumeId}?template=${templateId}`;
+      
+      await navigator.clipboard.writeText(portfolioLink);
+      toast.success('Portfolio link copied to clipboard!');
+    } catch (error) {
+      console.error("Error copying link:", error);
+      toast.error('Failed to copy portfolio link.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -113,7 +134,19 @@ const ResumeBuilder = () => {
                   <span className="text-sm text-gray-500">
                     Created: {new Date(resume.createdAt).toLocaleDateString()}
                   </span>
-                  <div className="space-x-2">
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => handleViewPDF(resume)}
+                      className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                    >
+                      View PDF
+                    </button>
+                    <button
+                      onClick={() => handleCopyPortfolioLink(resume._id)}
+                      className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
+                    >
+                      Copy Link
+                    </button>
                     <button
                       onClick={() => handleEdit(resume)}
                       className="px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"

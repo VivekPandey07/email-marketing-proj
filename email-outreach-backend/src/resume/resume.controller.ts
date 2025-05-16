@@ -50,7 +50,7 @@ export class ResumeController {
     };
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getById(@Param('id') id: string) {
     const resume = await this.resumeService.getById(id);
