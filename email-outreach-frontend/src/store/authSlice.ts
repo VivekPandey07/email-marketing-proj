@@ -17,7 +17,7 @@ interface registerData {
 interface AuthState {
   user: any | null;
   token: string | null;
-  error: string | null; 
+  error: string | null;
 }
 
 interface ForgotPasswordData {
@@ -28,6 +28,31 @@ interface ResetPasswordData {
   token: string;
   newPassword: string;
 }
+
+// Helper function to check token expiration
+const isTokenExpired = (token: string | null): boolean => {
+  if (!token) return true;
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch (e) {
+    return true;
+  }
+};
+
+// Helper function to get user from localStorage with expiration check
+const getStoredUser = () => {
+  const token = localStorage.getItem("token");
+  if (isTokenExpired(token)) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    return null;
+  }
+  
+  const userStr = localStorage.getItem("user");
+  return userStr ? JSON.parse(userStr) : null;
+};
 
 export const loginUser = createAsyncThunk(
   "auth/login",
@@ -50,7 +75,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Forgot Password Thunk
 export const forgotPassword = createAsyncThunk(
   "auth/forgotPassword",
   async (data: ForgotPasswordData, { rejectWithValue }) => {
@@ -95,37 +119,46 @@ export const registerUser = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: localStorage.getItem("user") 
-      ? JSON.parse(localStorage.getItem("user") as any)
+    user: getStoredUser(),
+    token: localStorage.getItem("token") && !isTokenExpired(localStorage.getItem("token")) 
+      ? localStorage.getItem("token") 
       : null,
-    token: localStorage.getItem("token") || null,
-    error: null, // Initialize error state
+    error: null,
   } as AuthState,
   reducers: {
     logout: (state) => {
       state.user = null;
       state.token = null;
-      state.error = null; // Reset error on logout
+      state.error = null;
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
+    checkAuth: (state) => {
+      if (isTokenExpired(state.token)) {
+        state.user = null;
+        state.token = null;
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+    }
   },
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
-        state.error = null; // Clear error on successful login
+        state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
-        state.error = null; // Clear error on successful registration
+        state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.error = action.payload as string; // Set error message
+        state.error = action.payload as string;
       })
       .addCase(registerUser.rejected, (state, action) => {
-        state.error = action.payload as string; // Set error message
+        state.error = action.payload as string;
       })
       .addCase(forgotPassword.fulfilled, (state) => {
         state.error = null;
@@ -142,5 +175,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, checkAuth } = authSlice.actions;
 export default authSlice.reducer;

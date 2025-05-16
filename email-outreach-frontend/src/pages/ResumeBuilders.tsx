@@ -3,6 +3,14 @@ import { getResumeData, createResume, updateResume, deleteResume } from "../serv
 import { useSelector } from "react-redux";
 import ResumeForm from "../components/ResumeForm";
 import toast from "react-hot-toast";
+import {
+  DocumentIcon,
+  PencilIcon,
+  TrashIcon,
+  PlusIcon,
+  LinkIcon,
+  EyeIcon,
+} from "@heroicons/react/24/solid";
 
 const ResumeBuilder = () => {
   const [resumes, setResumes] = useState<any[]>([]);
@@ -36,10 +44,7 @@ const ResumeBuilder = () => {
   const handleSave = async (resumeData: any) => {
     try {
       if (isCreating) {
-        const newResume = await createResume({
-          ...resumeData,
-          userId: user.id
-        }, token);
+        const newResume = await createResume({ ...resumeData, userId: user.id }, token);
         setResumes([newResume, ...resumes]);
       } else {
         const updatedResume = await updateResume(selectedResume._id, resumeData, token);
@@ -61,106 +66,101 @@ const ResumeBuilder = () => {
   };
 
   const handleViewPDF = (resume: any) => {
-    // For now, just log and show alert
-    console.log("Generating PDF for resume:", resume);
-    const templateId = Math.floor(Math.random() * 4) + 1; // Random template 1-4
+    const templateId = Math.floor(Math.random() * 4) + 1;
     alert(`PDF generation would use template ${templateId}. Backend implementation needed.`);
   };
 
   const handleCopyPortfolioLink = async (resumeId: string) => {
     try {
-      const templateId = Math.floor(Math.random() * 4) + 1; // Random template 1-4
+      const templateId = Math.floor(Math.random() * 4) + 1;
       const portfolioLink = `${window.location.origin}/portfolio/${resumeId}?template=${templateId}`;
-      
       await navigator.clipboard.writeText(portfolioLink);
-      toast.success('Portfolio link copied to clipboard!');
+      toast.success("Portfolio link copied to clipboard!");
     } catch (error) {
       console.error("Error copying link:", error);
-      toast.error('Failed to copy portfolio link.');
+      toast.error("Failed to copy portfolio link.");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10 px-4 sm:px-6 lg:px-8 transition-all">
       <div className="max-w-7xl mx-auto">
-        {/* Header with Stats */}
+        {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-indigo-700 mb-2">
+          <h1 className="text-4xl font-extrabold text-indigo-700 dark:text-indigo-400">
             <span className="bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">
               VITACRAFT
             </span>
           </h1>
-          <p className="text-gray-600 text-lg mb-6">
+          <p className="text-gray-600 dark:text-gray-300 text-lg mt-2">
             Build and manage your professional resumes
           </p>
-          
-          <div className="flex justify-center space-x-6 mb-8">
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 w-40">
-              <p className="text-gray-500 text-sm">Total Resumes</p>
-              <p className="text-2xl font-bold text-indigo-600">{resumes.length}</p>
+
+          <div className="flex justify-center gap-6 mt-6">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow border w-40">
+              <p className="text-gray-500 dark:text-gray-400 text-sm">Total Resumes</p>
+              <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{resumes.length}</p>
             </div>
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 w-40">
-              <p className="text-gray-500 text-sm">Last Updated</p>
-              <p className="text-lg font-medium text-gray-700">
-                {resumes.length > 0 ? 
-                  new Date(resumes[0].updatedAt).toLocaleDateString() : 
-                  'Never'}
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow border w-40">
+              <p className="text-gray-500 dark:text-gray-400 text-sm">Last Updated</p>
+              <p className="text-lg font-medium text-gray-700 dark:text-gray-200">
+                {resumes.length > 0 ? new Date(resumes[0].updatedAt).toLocaleDateString() : "Never"}
               </p>
             </div>
           </div>
         </div>
 
+        {/* Section Title */}
+        {resumes.length > 0 && (
+          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Your Resumes</h2>
+        )}
+
         {/* Resumes Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {resumes.map((resume) => (
-            <div 
-              key={resume._id} 
-              className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow duration-300"
+            <div
+              key={resume._id}
+              className="bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition p-6 border"
             >
-              <div className="p-6">
-                <div className="flex items-center mb-4">
-                  <div className="bg-indigo-100 p-3 rounded-full mr-4">
-                    <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800">{resume.fullName || 'Untitled Resume'}</h3>
-                    <p className="text-gray-500">{resume.email}</p>
-                  </div>
+              <div className="flex items-center mb-4">
+                <div className="bg-indigo-100 dark:bg-indigo-900 p-3 rounded-full mr-4">
+                  <DocumentIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                 </div>
-                
-                <div className="flex justify-between items-center mt-6">
-                  <span className="text-sm text-gray-500">
-                    Created: {new Date(resume.createdAt).toLocaleDateString()}
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() => handleViewPDF(resume)}
-                      className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-                    >
-                      View PDF
-                    </button>
-                    <button
-                      onClick={() => handleCopyPortfolioLink(resume._id)}
-                      className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
-                    >
-                      Copy Link
-                    </button>
-                    <button
-                      onClick={() => handleEdit(resume)}
-                      className="px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(resume._id)}
-                      className="px-3 py-1 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
-                    >
-                      Delete
-                    </button>
-                  </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{resume.fullName || "Untitled Resume"}</h3>
+                  <p className="text-gray-500 text-sm">{resume.email}</p>
                 </div>
+              </div>
+
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                Created: {new Date(resume.createdAt).toLocaleDateString()}
+              </p>
+
+              <div className="flex flex-wrap gap-3 mt-4">
+                <button
+                  onClick={() => handleViewPDF(resume)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                >
+                  <EyeIcon className="w-4 h-4" /> View PDF
+                </button>
+                <button
+                  onClick={() => handleCopyPortfolioLink(resume._id)}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+                >
+                  <LinkIcon className="w-4 h-4" /> Copy Portfolio Link
+                </button>
+                <button
+                  onClick={() => handleEdit(resume)}
+                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700"
+                >
+                  <PencilIcon className="w-4 h-4" /> Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(resume._id)}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700"
+                >
+                  <TrashIcon className="w-4 h-4" /> Delete
+                </button>
               </div>
             </div>
           ))}
@@ -168,23 +168,17 @@ const ResumeBuilder = () => {
 
         {/* Empty State */}
         {resumes.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <h3 className="mt-2 text-lg font-medium text-gray-900">No resumes yet</h3>
-            <p className="mt-1 text-gray-500">Get started by creating your first resume.</p>
-            <div className="mt-6">
-              <button
-                onClick={handleAddNew}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                <svg className="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                New Resume
-              </button>
-            </div>
+          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl shadow border mb-12">
+            <PlusIcon className="mx-auto h-12 w-12 text-indigo-400 mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">No resumes yet</h3>
+            <p className="text-gray-500 dark:text-gray-400">Click below to create your first resume.</p>
+            <button
+              onClick={handleAddNew}
+              className="mt-6 inline-flex items-center gap-2 px-5 py-3 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700"
+            >
+              <PlusIcon className="w-4 h-4" />
+              New Resume
+            </button>
           </div>
         )}
 
@@ -193,20 +187,21 @@ const ResumeBuilder = () => {
           <div className="text-center">
             <button
               onClick={handleAddNew}
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white text-base rounded-lg hover:bg-indigo-700"
             >
-              <svg className="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
+              <PlusIcon className="w-5 h-5" />
               Create New Resume
             </button>
           </div>
         )}
 
-        {/* Edit/Add Modal */}
+        {/* Modal with animation */}
         {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 transition">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl transform scale-100 transition-all duration-300 w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6">
+              <h2 className="text-2xl font-bold text-indigo-700 dark:text-indigo-400 mb-4">
+                {isCreating ? "Create New Resume" : "Edit Resume"}
+              </h2>
               <ResumeForm
                 initialData={selectedResume || {}}
                 onSave={handleSave}
