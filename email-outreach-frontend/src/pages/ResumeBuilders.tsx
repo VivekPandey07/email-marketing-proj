@@ -11,6 +11,8 @@ import {
   LinkIcon,
   EyeIcon,
 } from "@heroicons/react/24/solid";
+import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
+import ResumePDF from "./ResumePDF";
 
 const ResumeBuilder = () => {
   const [resumes, setResumes] = useState<any[]>([]);
@@ -65,9 +67,21 @@ const ResumeBuilder = () => {
     }
   };
 
-  const handleViewPDF = (resume: any) => {
-    const templateId = Math.floor(Math.random() * 4) + 1;
-    alert(`PDF generation would use template ${templateId}. Backend implementation needed.`);
+  const handleViewPDF = async (resume: any) => {
+    try {
+      const blob = await pdf(<ResumePDF data={resume} />).toBlob();
+  
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${resume.fullName || "resume"}.pdf`;
+      link.click();
+  
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      toast.error("Failed to generate PDF");
+    }
   };
 
   const handleCopyPortfolioLink = async (resumeId: string) => {
@@ -200,7 +214,7 @@ const ResumeBuilder = () => {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 transition">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl transform scale-100 transition-all duration-300 w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6">
               <h2 className="text-2xl font-bold text-indigo-700 dark:text-indigo-400 mb-4">
-                {isCreating ? "Create New Resume" : "Edit Resume"}
+                {/* {isCreating ? "Create New Resume" : "Edit Resume"} */}
               </h2>
               <ResumeForm
                 initialData={selectedResume || {}}
