@@ -97,27 +97,27 @@ const ResumeBuilder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10 px-4 sm:px-6 lg:px-8 transition-all">
+    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-indigo-700 dark:text-indigo-400">
+          <h1 className="text-4xl font-extrabold text-indigo-700">
             <span className="bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">
               VITACRAFT
             </span>
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 text-lg mt-2">
+          <p className="text-gray-600 text-lg mt-2">
             Build and manage your professional resumes
           </p>
 
           <div className="flex justify-center gap-6 mt-6">
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow border w-40">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Total Resumes</p>
-              <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{resumes.length}</p>
+            <div className="bg-white p-4 rounded-xl shadow border w-40">
+              <p className="text-gray-500 text-sm">Total Resumes</p>
+              <p className="text-2xl font-bold text-indigo-600">{resumes.length}</p>
             </div>
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow border w-40">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Last Updated</p>
-              <p className="text-lg font-medium text-gray-700 dark:text-gray-200">
+            <div className="bg-white p-4 rounded-xl shadow border w-40">
+              <p className="text-gray-500 text-sm">Last Updated</p>
+              <p className="text-lg font-medium text-gray-700">
                 {resumes.length > 0 ? new Date(resumes[0].updatedAt).toLocaleDateString() : "Never"}
               </p>
             </div>
@@ -126,7 +126,7 @@ const ResumeBuilder = () => {
 
         {/* Section Title */}
         {resumes.length > 0 && (
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Your Resumes</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Your Resumes</h2>
         )}
 
         {/* Resumes Grid */}
@@ -134,19 +134,19 @@ const ResumeBuilder = () => {
           {resumes.map((resume) => (
             <div
               key={resume._id}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition p-6 border"
+              className="bg-white rounded-xl shadow hover:shadow-lg transition p-6 border"
             >
               <div className="flex items-center mb-4">
-                <div className="bg-indigo-100 dark:bg-indigo-900 p-3 rounded-full mr-4">
-                  <DocumentIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                <div className="bg-indigo-100 p-3 rounded-full mr-4">
+                  <DocumentIcon className="w-6 h-6 text-indigo-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{resume.fullName || "Untitled Resume"}</h3>
+                  <h3 className="text-lg font-semibold text-gray-800">{resume.fullName || "Untitled Resume"}</h3>
                   <p className="text-gray-500 text-sm">{resume.email}</p>
                 </div>
               </div>
 
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              <p className="text-sm text-gray-500 mb-4">
                 Created: {new Date(resume.createdAt).toLocaleDateString()}
               </p>
 
@@ -182,10 +182,10 @@ const ResumeBuilder = () => {
 
         {/* Empty State */}
         {resumes.length === 0 && (
-          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl shadow border mb-12">
+          <div className="text-center py-12 bg-white rounded-xl shadow border mb-12">
             <PlusIcon className="mx-auto h-12 w-12 text-indigo-400 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">No resumes yet</h3>
-            <p className="text-gray-500 dark:text-gray-400">Click below to create your first resume.</p>
+            <h3 className="text-lg font-semibold text-gray-900">No resumes yet</h3>
+            <p className="text-gray-500">Click below to create your first resume.</p>
             <button
               onClick={handleAddNew}
               className="mt-6 inline-flex items-center gap-2 px-5 py-3 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700"
@@ -211,9 +211,9 @@ const ResumeBuilder = () => {
 
         {/* Modal with animation */}
         {showModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 transition">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl transform scale-100 transition-all duration-300 w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6">
-              <h2 className="text-2xl font-bold text-indigo-700 dark:text-indigo-400 mb-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6">
+              <h2 className="text-2xl font-bold text-indigo-700 mb-4">
                 {/* {isCreating ? "Create New Resume" : "Edit Resume"} */}
               </h2>
               <ResumeForm

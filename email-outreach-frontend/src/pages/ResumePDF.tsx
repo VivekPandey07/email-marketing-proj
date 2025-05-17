@@ -1,90 +1,121 @@
-// components/ResumePDF.tsx
 import {
     Document,
     Page,
     Text,
     View,
     StyleSheet,
-    Font,
     Link,
   } from "@react-pdf/renderer";
   
-  // Styles
+  // Styles inspired by the provided resume
   const styles = StyleSheet.create({
     page: {
       padding: 40,
-      fontSize: 11,
+      fontSize: 10,
       fontFamily: "Helvetica",
-      lineHeight: 1.5,
       color: "#111827",
     },
-    section: {
-      marginBottom: 16,
-    },
     header: {
-      fontSize: 22,
+      fontSize: 18,
+      color: "#6B46C1",
+      textAlign: "center",
+      marginBottom: 6,
       fontWeight: "bold",
-      color: "#4f46e5",
-      marginBottom: 4,
     },
-    subHeader: {
+    contactInfo: {
+      textAlign: "center",
+      fontSize: 9,
+      marginBottom: 10,
+      color: "#4B5563",
+    },
+    sectionHeader: {
       fontSize: 12,
       fontWeight: "bold",
-      color: "#374151",
-      marginBottom: 6,
-      borderBottom: "1 solid #e5e7eb",
-      paddingBottom: 4,
+      color: "#6B46C1",
+      borderBottom: "1 solid #CBD5E0",
+      marginBottom: 5,
       textTransform: "uppercase",
     },
-    field: {
-      marginBottom: 2,
+    section: {
+      marginBottom: 10,
     },
-    label: {
+    jobTitle: {
       fontWeight: "bold",
+    },
+    date: {
+      color: "#718096",
+      fontSize: 9,
     },
     bullet: {
       marginLeft: 8,
       marginBottom: 2,
     },
-    url: {
-      color: "#2563eb",
-      fontSize: 10,
-    },
-    text: {
-      fontSize: 11,
+    link: {
+      color: "#3182CE",
+      textDecoration: "none",
     },
   });
   
   const ResumePDF = ({ data }: { data: any }) => (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page style={styles.page}>
         {/* Header */}
         <View style={styles.section}>
           <Text style={styles.header}>{data.fullName}</Text>
-          <Text>{data.email}</Text>
-          {data.phone && <Text>{data.phone}</Text>}
+          <Text style={styles.contactInfo}>
+            {data.location || ''} • {data.phone || ''} • {data.email}
+          </Text>
+          {(data.githubUrl || data.linkedInUrl || data.portfolioUrl) && (
+            <View style={{ flexDirection: "row", justifyContent: "center", gap: 10 }}>
+              {data.githubUrl && <Link src={data.githubUrl} style={styles.link}>GitHub</Link>}
+              {data.linkedInUrl && <Link src={data.linkedInUrl} style={styles.link}>LinkedIn</Link>}
+              {data.portfolioUrl && <Link src={data.portfolioUrl} style={styles.link}>Portfolio</Link>}
+            </View>
+          )}
         </View>
   
         {/* Summary */}
         {data.summary && (
           <View style={styles.section}>
-            <Text style={styles.subHeader}>Professional Summary</Text>
-            <Text style={styles.text}>{data.summary}</Text>
+            <Text style={styles.sectionHeader}>Summary</Text>
+            <Text>{data.summary}</Text>
+          </View>
+        )}
+  
+        {/* Experience */}
+        {data.experience?.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionHeader}>Work Experience</Text>
+            {data.experience.map((exp: any, idx: number) => (
+              <View key={idx} style={{ marginBottom: 6 }}>
+                <Text style={styles.jobTitle}>
+                  {exp.jobTitle}, {exp.company}
+                </Text>
+                <Text style={styles.date}>
+                  {exp.startDate} – {exp.endDate || "Present"}
+                </Text>
+                {exp.description && (
+                  <Text style={styles.bullet}>
+                    • {exp.description}
+                  </Text>
+                )}
+              </View>
+            ))}
           </View>
         )}
   
         {/* Education */}
         {data.education?.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.subHeader}>Education</Text>
-            {data.education.map((edu: any, index: number) => (
-              <View key={index} style={{ marginBottom: 6 }}>
-                <Text style={styles.label}>
+            <Text style={styles.sectionHeader}>Education</Text>
+            {data.education.map((edu: any, idx: number) => (
+              <View key={idx} style={{ marginBottom: 6 }}>
+                <Text style={styles.jobTitle}>
                   {edu.degree} in {edu.fieldOfStudy}
                 </Text>
                 <Text>{edu.institution}</Text>
-                <Text>
-                  {edu.startYear} – {edu.endYear} | GPA/Score: {edu.percentage}
+                <Text style={styles.date}>
+                  {edu.startYear} – {edu.endYear} {edu.percentage ? `| GPA: ${edu.percentage}` : ""}
                 </Text>
               </View>
             ))}
@@ -94,37 +125,32 @@ import {
         {/* Skills */}
         {data.skills?.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.subHeader}>Skills</Text>
-            {data.skills.map((skill: any, index: number) => (
-              <Text key={index} style={styles.bullet}>
-                • {skill.name} — {skill.level}, {skill.yearsOfExperience} yrs
-              </Text>
-            ))}
+            <Text style={styles.sectionHeader}>Skills</Text>
+            <Text>
+              {data.skills.map((skill: any) => skill.name).join(", ")}
+            </Text>
           </View>
         )}
   
         {/* Projects */}
         {data.projects?.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.subHeader}>Projects</Text>
-            {data.projects.map((proj: any, index: number) => (
-              <View key={index} style={{ marginBottom: 8 }}>
-                <Text style={styles.label}>{proj.title}</Text>
+            <Text style={styles.sectionHeader}>Projects</Text>
+            {data.projects.map((proj: any, idx: number) => (
+              <View key={idx} style={{ marginBottom: 6 }}>
+                <Text style={styles.jobTitle}>{proj.title}</Text>
+                <Text style={styles.date}>
+                  {proj.startDate || "N/A"} – {proj.endDate || "Present"}
+                </Text>
                 <Text>{proj.description}</Text>
-                {proj.technologies?.length > 0 && (
-                  <Text style={styles.text}>
-                    <Text style={styles.label}>Technologies:</Text>{" "}
+                {proj.technologies && (
+                  <Text style={{ marginTop: 2 }}>
+                    <Text style={{ fontWeight: "bold" }}>Technologies: </Text>
                     {proj.technologies.join(", ")}
                   </Text>
                 )}
-                {(proj.startDate || proj.endDate) && (
-                  <Text style={styles.text}>
-                    <Text style={styles.label}>Duration:</Text>{" "}
-                    {proj.startDate || "N/A"} - {proj.endDate || "N/A"}
-                  </Text>
-                )}
                 {proj.url && (
-                  <Link style={styles.url} src={proj.url}>
+                  <Link src={proj.url} style={styles.link}>
                     {proj.url}
                   </Link>
                 )}

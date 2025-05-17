@@ -13,7 +13,16 @@ interface EducationItem {
 interface SkillItem {
   name: string;
   level: string;
-  yearsOfExperience: string;
+}
+
+interface ExperienceItem {
+  position: string;
+  company: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  technologies: string[];
 }
 
 interface ProjectItem {
@@ -42,7 +51,12 @@ const ResumeForm: React.FC<ResumeFormProps> = ({
   const [fullName, setFullName] = useState(initialData?.fullName || "");
   const [email, setEmail] = useState(initialData?.email || "");
   const [phone, setPhone] = useState(initialData?.phone || "");
+  const [location, setLocation] = useState(initialData?.location || "");
+  const [portfolioUrl, setPortfolioUrl] = useState(initialData?.portfolioUrl || "");
+  const [linkedInUrl, setLinkedInUrl] = useState(initialData?.linkedInUrl || "");
+  const [githubUrl, setGithubUrl] = useState(initialData?.githubUrl || "");
   const [summary, setSummary] = useState(initialData?.summary || "");
+  
   const [education, setEducation] = useState<EducationItem[]>(
     initialData?.education || [{
       institution: "",
@@ -53,13 +67,26 @@ const ResumeForm: React.FC<ResumeFormProps> = ({
       endYear: ""
     }]
   );
+  
+  const [experience, setExperience] = useState<ExperienceItem[]>(
+    initialData?.experience || [{
+      position: "",
+      company: "",
+      location: "",
+      startDate: "",
+      endDate: "",
+      description: "",
+      technologies: []
+    }]
+  );
+  
   const [skills, setSkills] = useState<SkillItem[]>(
     initialData?.skills || [{
       name: "",
-      level: "",
-      yearsOfExperience: ""
+      level: ""
     }]
   );
+  
   const [projects, setProjects] = useState<ProjectItem[]>(
     initialData?.projects || [{
       title: "",
@@ -99,12 +126,42 @@ const ResumeForm: React.FC<ResumeFormProps> = ({
     setEducation(updated);
   };
 
+  // Experience handlers
+  const handleAddExperience = () => {
+    setExperience([...experience, {
+      position: "",
+      company: "",
+      location: "",
+      startDate: "",
+      endDate: "",
+      description: "",
+      technologies: []
+    }]);
+  };
+
+  const handleRemoveExperience = (index: number) => {
+    setExperience(experience.filter((_, i) => i !== index));
+  };
+
+  const handleAddExperienceTech = (expIndex: number) => {
+    const updated = [...experience];
+    updated[expIndex].technologies = [...updated[expIndex].technologies, ""];
+    setExperience(updated);
+  };
+
+  const handleRemoveExperienceTech = (expIndex: number, techIndex: number) => {
+    const updated = [...experience];
+    updated[expIndex].technologies = updated[expIndex].technologies.filter(
+      (_, i) => i !== techIndex
+    );
+    setExperience(updated);
+  };
+
   // Skills handlers
   const handleAddSkill = () => {
     setSkills([...skills, {
       name: "",
-      level: "",
-      yearsOfExperience: ""
+      level: ""
     }]);
   };
 
@@ -159,8 +216,13 @@ const ResumeForm: React.FC<ResumeFormProps> = ({
       fullName,
       email,
       phone,
+      location,
+      portfolioUrl,
+      linkedInUrl,
+      githubUrl,
       summary,
       education,
+      experience,
       skills,
       projects
     };
@@ -227,6 +289,46 @@ const ResumeForm: React.FC<ResumeFormProps> = ({
               onChange={(e) => setPhone(e.target.value)}
             />
           </div>
+          <div>
+            <label className="block mb-1 font-medium">Location</label>
+            <input
+              type="text"
+              className="w-full p-2 border rounded-md"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="City, Country"
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">LinkedIn URL</label>
+            <input
+              type="url"
+              className="w-full p-2 border rounded-md"
+              value={linkedInUrl}
+              onChange={(e) => setLinkedInUrl(e.target.value)}
+              placeholder="https://linkedin.com/in/username"
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">GitHub URL</label>
+            <input
+              type="url"
+              className="w-full p-2 border rounded-md"
+              value={githubUrl}
+              onChange={(e) => setGithubUrl(e.target.value)}
+              placeholder="https://github.com/username"
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Portfolio URL</label>
+            <input
+              type="url"
+              className="w-full p-2 border rounded-md"
+              value={portfolioUrl}
+              onChange={(e) => setPortfolioUrl(e.target.value)}
+              placeholder="https://yourportfolio.com"
+            />
+          </div>
         </div>
 
         {/* Summary */}
@@ -239,6 +341,161 @@ const ResumeForm: React.FC<ResumeFormProps> = ({
             onChange={(e) => setSummary(e.target.value)}
             placeholder="Briefly describe your professional background and skills..."
           />
+        </div>
+
+        {/* Experience Section */}
+        <div className="border-t pt-4">
+          <label className="block mb-2 font-semibold text-indigo-600">
+            Work Experience
+          </label>
+          {experience.map((exp, index) => (
+            <div key={index} className="mb-4 p-4 border rounded-lg">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block mb-1 font-medium">Position*</label>
+                  <input
+                    type="text"
+                    placeholder="Software Engineer"
+                    value={exp.position}
+                    onChange={(e) => {
+                      const updated = [...experience];
+                      updated[index].position = e.target.value;
+                      setExperience(updated);
+                    }}
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1 font-medium">Company*</label>
+                  <input
+                    type="text"
+                    placeholder="Company Name"
+                    value={exp.company}
+                    onChange={(e) => {
+                      const updated = [...experience];
+                      updated[index].company = e.target.value;
+                      setExperience(updated);
+                    }}
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block mb-1 font-medium">Location</label>
+                  <input
+                    type="text"
+                    placeholder="City, Country"
+                    value={exp.location}
+                    onChange={(e) => {
+                      const updated = [...experience];
+                      updated[index].location = e.target.value;
+                      setExperience(updated);
+                    }}
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block mb-1 font-medium">Start Date*</label>
+                  <input
+                    type="date"
+                    value={exp.startDate}
+                    onChange={(e) => {
+                      const updated = [...experience];
+                      updated[index].startDate = e.target.value;
+                      setExperience(updated);
+                    }}
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1 font-medium">End Date</label>
+                  <input
+                    type="date"
+                    value={exp.endDate}
+                    onChange={(e) => {
+                      const updated = [...experience];
+                      updated[index].endDate = e.target.value;
+                      setExperience(updated);
+                    }}
+                    className="w-full p-2 border rounded-md"
+                    placeholder="Present if current"
+                  />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block mb-1 font-medium">Description*</label>
+                <textarea
+                  placeholder="Describe your responsibilities and achievements..."
+                  value={exp.description}
+                  onChange={(e) => {
+                    const updated = [...experience];
+                    updated[index].description = e.target.value;
+                    setExperience(updated);
+                  }}
+                  className="w-full p-2 border rounded-md"
+                  rows={3}
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block mb-1 font-medium">Technologies Used</label>
+                {exp.technologies.map((tech, techIndex) => (
+                  <div key={techIndex} className="flex items-center gap-2 mb-2">
+                    <input
+                      type="text"
+                      placeholder="Technology"
+                      value={tech}
+                      onChange={(e) => {
+                        const updated = [...experience];
+                        updated[index].technologies[techIndex] = e.target.value;
+                        setExperience(updated);
+                      }}
+                      className="flex-1 p-2 border rounded-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveExperienceTech(index, techIndex)}
+                      className="p-2 text-red-600 hover:text-red-800"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => handleAddExperienceTech(index)}
+                  className="flex items-center text-sm text-indigo-600 hover:text-indigo-800 mt-1"
+                >
+                  <span className="mr-1">+</span> Add Technology
+                </button>
+              </div>
+
+              {experience.length > 1 && (
+                <div className="mt-3 text-right">
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveExperience(index)}
+                    className="text-sm text-red-600 hover:text-red-800"
+                  >
+                    Remove Experience
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleAddExperience}
+            className="flex items-center text-sm text-indigo-600 hover:text-indigo-800 mt-2"
+          >
+            <span className="mr-1">+</span> Add Experience
+          </button>
         </div>
 
         {/* Education Section */}
@@ -395,22 +652,6 @@ const ResumeForm: React.FC<ResumeFormProps> = ({
                     <option value="expert">Expert</option>
                   </select>
                 </div>
-              </div>
-
-              <div>
-                <label className="block mb-1 font-medium">Years of Experience</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="50"
-                  step="0.5"
-                  placeholder="2.5"
-                  value={skill.yearsOfExperience}
-                  onChange={(e) =>
-                    handleSkillChange(index, "yearsOfExperience", e.target.value)
-                  }
-                  className="w-full p-2 border rounded-md"
-                />
               </div>
 
               {skills.length > 1 && (
