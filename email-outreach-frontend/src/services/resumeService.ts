@@ -66,3 +66,17 @@ export const getResumeById = async (id: string) => {
     throw error;
   }
 };
+
+export const enhanceResumeWithAI = async (resumeData: any, token: string) => {
+  try {
+    const res = await axios.post(`${API_URL}/enhance`, resumeData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data.resume;
+  } catch (error) {
+    console.error("Error fetching resume:", error);
+    throw error;
+  }
+};

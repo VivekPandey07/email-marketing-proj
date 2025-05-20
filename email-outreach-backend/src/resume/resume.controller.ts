@@ -11,10 +11,14 @@ import {
 import { ResumeService } from './resume.service';
 import { CreateUpdateResumeDto } from './dto/create-update-resume.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { OpenAIService } from './openai.service';
 
 @Controller('resume')
 export class ResumeController {
-  constructor(private readonly resumeService: ResumeService) {}
+  constructor(
+    private readonly resumeService: ResumeService,
+    private readonly openAIService: OpenAIService
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -36,6 +40,16 @@ export class ResumeController {
     return { 
       message: 'Resume updated successfully', 
       resume: result 
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('enhance')
+  async enhanceWithAI(@Body() dto: CreateUpdateResumeDto) {
+    const enhancedResume = await this.openAIService.enhanceResume(dto);
+    return {
+      message: 'Resume enhanced successfully',
+      resume: enhancedResume
     };
   }
 
